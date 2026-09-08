@@ -1,0 +1,19 @@
+dataset: deepmoji
+output_dir: outputs/DIAL
+
+erasure_model:
+  name: FaRM
+
+erasure_model_init_params:
+  io_size: 300
+  hidden_size: null
+  num_layers: 7
+  n_epochs: 50
+  batch_size: 512
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-5
+  scheduler_milestones: []
+  scheduler_gamma: 0.1
+  seed: 42
+  
+seed: 123

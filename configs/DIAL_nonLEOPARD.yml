@@ -1,0 +1,19 @@
+dataset: deepmoji
+output_dir: outputs/DIAL
+
+
+erasure_model:
+  name: nonLEOPARD
+
+erasure_model_init_params:
+  input_size: 300 
+  rank: 10
+  cascaded_training: true
+  batch_size: 2048
+  num_epochs: 200
+  learning_rate: 5.0e-4
+  scheduler_milestones: [100]
+  gamma: 100
+
+seed: 123
+

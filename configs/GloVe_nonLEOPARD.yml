@@ -1,0 +1,19 @@
+dataset: GloVe
+output_dir: outputs/GloVe
+
+
+erasure_model:
+  name: nonLEOPARD
+
+erasure_model_init_params:
+  input_size: 300 
+  rank: 200
+  cascaded_training: true
+  batch_size: 10777
+  num_epochs: 1000
+  learning_rate: 1.0e-3
+  scheduler_milestones: [500]
+  gamma: 200
+
+seed: 123
+

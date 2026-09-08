@@ -1,0 +1,17 @@
+dataset: jigsaw
+output_dir: outputs/jigsaw
+
+erasure_model:
+  name: KRaM
+
+erasure_model_init_params:
+  io_size: 512
+  hidden_size: null
+  num_layers: 4
+  n_epochs: 50
+  batch_size: 512
+  learning_rate: 1.0e-3
+  weight_decay: 1.0e-5
+  seed: 42
+
+seed: 123

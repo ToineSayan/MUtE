@@ -1,0 +1,13 @@
+dataset: biasbios
+output_dir: outputs/biasbios
+
+erasure_model:
+  name: MUtE
+
+erasure_model_init_params:
+  rotation: pca
+  nsteps: 70 # 200
+  bins: 1000
+  rotation_scheme: alternate
+
+seed: 123

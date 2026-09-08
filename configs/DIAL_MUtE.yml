@@ -1,0 +1,13 @@
+dataset: deepmoji
+output_dir: outputs/DIAL
+
+erasure_model:
+  name: MUtE
+
+erasure_model_init_params:
+  rotation: pca
+  rotation_scheme: alternate
+  nsteps:  150 
+  bins: 1000
+  
+seed: 123

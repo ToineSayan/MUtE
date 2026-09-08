@@ -1,0 +1,16 @@
+dataset: deepmoji
+output_dir: outputs/DIAL
+
+
+erasure_model:
+  name: TACO
+
+erasure_model_init_params:
+  method_decompose: PCA
+  num_components: 100
+  n_concepts_to_remove: 1
+  epochs: 50
+  verbose: true
+
+seed: 123
+

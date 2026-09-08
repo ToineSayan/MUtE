@@ -1,0 +1,14 @@
+dataset: GloVe
+output_dir: outputs/GloVe
+
+# primary erasure model 
+erasure_model:
+  name: MUtE
+
+erasure_model_init_params:
+  rotation: pca # random or pca
+  rotation_scheme: alternate # global or alternate
+  nsteps: 100
+  bins: 1000
+
+seed: 123

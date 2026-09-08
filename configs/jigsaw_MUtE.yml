@@ -1,0 +1,13 @@
+dataset: jigsaw
+output_dir: outputs/jigsaw
+
+erasure_model:
+  name: MUtE
+
+erasure_model_init_params:
+  rotation: pca
+  nsteps: 150 # 150 originally
+  bins: 1000
+  rotation_scheme: alternate
+
+seed: 123
