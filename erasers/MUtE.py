@@ -265,6 +265,7 @@ class MUtE:
                  optimal_erasure=False, 
                  rotation='pca', 
                  nsteps=10, 
+                 verbose=True,
                  rotation_scheme='alternate',
                  alpha=1e-10, 
                  bound_ext=0.1, 
@@ -278,6 +279,7 @@ class MUtE:
         self.mappings = []
         self.rotation = rotation # to remove
         self.nsteps = nsteps
+        self.verbose = verbose
 
         if (isinstance(rotation_scheme, str) and rotation_scheme in ['alternate', 'global']):
             self.rotation_scheme = rotation_scheme
@@ -315,6 +317,7 @@ class MUtE:
         - optimal_erasure: {self.optimal_erasure} Whether to use optimal erasure (True) or empirical MUtE with a class predictor (False).
         - rotation: {self.rotation} Type of rotation to apply at each step ('pca' or 'random').
         - nsteps: {self.nsteps} Number of iterations (steps) in the MUtE process.
+        - verbose: {self.verbose} Whether to display the progress bar during fitting.
         - rotation_scheme: {self.rotation_scheme} Scheme for fitting rotations ('alternate' or 'global').
         - alpha: {self.alpha} Regularization parameter for histogram uniformization.
         - bound_ext: {self.bound_ext} Extension factor for histogram binning.
@@ -419,7 +422,7 @@ class MUtE:
      
 
 
-    def fit_transform(self, x: torch.Tensor, z: torch.Tensor, class_predictor=None):
+    def fit_transform(self, x: torch.Tensor, z: torch.Tensor, class_predictor=None, eval_function=None, eval_every=1, validation_data=None, validation_labels=None):
         '''
         Fits the MUtE model to the input data (x, z) and returns the transformed data. 
         This method performs the full iterative gaussianization process, including fitting the class predictor 
@@ -428,12 +431,19 @@ class MUtE:
         Parameters:
             x: input data (features)
             z: input data (class labels)
+            class_predictor: the class predictor model used for optimal erasure (optional)
+            eval_function: a function to evaluate the transformed data during training (optional)
+            eval_every: the frequency (in iterations) at which to evaluate the transformed data (default is 1)
+            validation_data: the validation data (optional)
+            validation_labels: the validation labels (optional)
         Returns:
             x_: the transformed data after applying the MUtE process
         '''
         # get the backend and device for the input data and transform x to a torch tensor on the correct device if it's not already
         x_, x_backend, x_device = self._set_backend_and_device(x)
         z, _, _ = self._set_backend_and_device(z)
+
+
 
         if self.optimal_erasure == False: # we use the empirical MUtE approach, and we need to fit the class predictor if it hasn't been fitted yet
             if class_predictor is not None:
@@ -448,9 +458,16 @@ class MUtE:
         # set the unique classes based on the input z
         self.unique_classes = torch.unique(z)
 
-        iterations = tqdm(range(self.nsteps))
+        # add a parameter not to show the progress bar if verbose is set to False
+        iterations = tqdm(range(self.nsteps), disable=not self.verbose)
         for _, iteration in enumerate(iterations, 0):
             x_ = self.fit_one_iteration(x_, z, z_hat, iteration)
+
+            if eval_function is not None and iteration % eval_every == 0:
+                x_val_ = self.transform(validation_data)
+                eval = eval_function(x=x_, z=z, x_val=x_val_, z_val=validation_labels)
+                self.evals.append((iteration,eval)) if hasattr(self, 'evals') else setattr(self, 'evals', [(iteration,eval)])
+                
             iterations.set_description(f"Iteration {iteration+1}/{self.nsteps} complete.")
 
 
@@ -485,8 +502,8 @@ class MUtE:
 
         return self._set_back_to_original_backend(x_, x_backend, x_device)
 
-    def fit(self, x: torch.Tensor, z: torch.Tensor, class_predictor=None):
-        _ = self.fit_transform(x, z, class_predictor=class_predictor)
+    def fit(self, x: torch.Tensor, z: torch.Tensor, class_predictor=None, eval_function=None, eval_every=1, validation_data=None, validation_labels=None):
+        _ = self.fit_transform(x, z, class_predictor=class_predictor, eval_function=eval_function, eval_every=eval_every, validation_data=validation_data, validation_labels=validation_labels)
 
     def transform(self, x, z=None):
         x, x_backend, x_device = self._set_backend_and_device(x)
@@ -546,7 +563,8 @@ class MUtE:
         self.class_clf = MLPClassifier(random_state=self.seed, max_iter=1000, early_stopping=True, validation_fraction=0.1)
         self.class_clf.fit(x[:self.max_num_samples_classifier_fit], z[:self.max_num_samples_classifier_fit])
         self.class_clf_fitted = True
-        print(f"Class predictor trained with accuracy (on train set): {self.class_clf.score(x, z)}")
+        if self.verbose:
+            print(f"Class predictor trained with accuracy (on train set): {self.class_clf.score(x, z)}")
 
     def set_class_predictor(self, clf):
         if not hasattr(clf, 'predict'):
