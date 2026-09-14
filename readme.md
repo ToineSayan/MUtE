@@ -2,13 +2,13 @@
 
 
 This repository contains the code and data for the experiments included in the paper:<br/>
-**Saillenfest Antoine (2026) MUtE: A Dual Framework for Concept Erasure and Counterfactual Interventions**
+**[Saillenfest Antoine (2026), MUtE: A Dual Framework for Concept Erasure and Counterfactual Interventions](https://arxiv.org/abs/2609.11253)**
 
 <p align="center">
 <img src="assets/intro_image_final.png" width="700" />
 </p>
 
-MUtE is a framework for erasing sensitive concepts from continuous representations while inducing a deterministic counterfactual mapping, which allows for both bias mitigation and the generation of counterfactuals.
+MUtE is a framework for erasing sensitive concepts from continuous representations while inducing a deterministic counterfactual mapping, which allows for both bias mitigation and the generation of counterfactuals. MUtE induces a translational bias along counterfactual trajectories. This makes it particularly effective in NLP settings, as it aligns with how many concepts are geometrically structured in modern language models.
 
 ## MUtE - Maximum Utility-preserving Erasure function
 
@@ -19,7 +19,6 @@ The Python class MUtE implements several methods for discrete concept erasure an
 ### Quickstart 
 
 ```python
-import matplotlib.pyplot as plt
 import numpy as np
 
 from sklearn.datasets import make_blobs
@@ -75,11 +74,59 @@ erasure_model.fit(x,z, class_predictor=clf) # learn the erasure function
 x_ = erasure_model.transform(x) # the erasure function only depends on x
 ```
 <p align="center">
+An example of MUtE applied to synthetic data.</br>
 <img src="assets/moons_example.png" width="700"/>
 </p>
 
 
-A notebook demonstrating a minimal example can be found at ./notebooks/minimal.ipynb.
+<div align="center">
+<table>
+  <caption>
+    Gender counterfactuals retrieved via MUtE applied to GloVe representations, ranked by cosine similarity.
+  </caption>
+    <thead>
+        <tr>
+            <th scope="col">Original word (female-related)</th>
+            <th scope="col">5 closest counterfactuals (descending order)</th>
+        </tr>
+    </thead>
+    <tr>
+      <th>actress</th>
+      <th>actor, movie, star, hollywood, stars</th>
+    </tr>
+    <tr>
+      <th>grandmother</th>
+      <th>grandfather, dad, grandpa, father, grandson</th>
+    </tr>
+    <tr>
+      <th>lesbian</th>
+      <th>gay, gays, twinks, young, queer</th>
+    </tr>
+    <tr>
+      <th>estrogen</th>
+      <th>hormone, testosterone, androgen, aromatase, dhea</th>
+    </tr>
+    <tr>
+      <th>girl</th>
+      <th>boy, kid, boys, young, guy</th>
+    </tr>
+    <tr>
+      <th>she</th>
+      <th>he, when, never, i, knew</th>
+    </tr>
+    <tr>
+      <th>ovaries</th>
+      <th>testes, testicles, gonads, follicles, glands</th>
+    </tr>
+</table>
+</div>
+
+<p align="center">
+Beyond NLP settings, MUtE can be used for data augmentation (here an example using the digits dataset).</br>
+<img src="assets/digits_example.png" width="700"/>
+</p>
+
+Those examples can be found in [./notebooks/minimal.ipynb](./notebooks/minimal.ipynb).
 
 ## Reproducing the experiments
 
@@ -116,13 +163,13 @@ Follow the [guidelines for downloading and preprocessing the data](./data/readme
 
 ### Synthetic data
 
-Run the notebook in ./notebooks/quickstart.ipynb
+Run the notebook in [./notebooks/quickstart.ipynb](./notebooks/quickstart.ipynb)
 
 ### Utility, Erasure, Fairness
 To run the experiments:
 
 1) Uncomment the configuration to use at the beginning of the script 
-2) Run the script
+2) Run the scripts
 > python -m scripts.evaluations # Erasure, Utility preservation & Fairness
 
 > python -m scripts.evaluations_fairness # Fairness and data augmentation
@@ -132,7 +179,7 @@ The script trains a model then evaluates it.
 ### Counterfactual texts generation
 
 Embed the data using
-Run the notebook in ./notebooks/biasbios/gtr-base/counterfactuals.ipynb
+Run the notebook in [./notebooks/biasbios/gtr-base/counterfactuals.ipynb](./notebooks/biasbios/gtr-base/counterfactuals.ipynb)
 
 ### Surrogates
 
